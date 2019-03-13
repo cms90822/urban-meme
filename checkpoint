@@ -1,0 +1,32 @@
+def calTimeOfCheckPoint():
+    n,pos = eval(input('input:'))
+    checkPi = input('input:')
+    checkP = [int(i) for i in checkPi.split(',')]
+    lenC = len(checkP)
+    posL = -1
+    posR = -1
+    for i in range(lenC):
+        if pos > checkP[i] and pos < checkP[i+1]:
+            posL = i
+            posR = i+1
+        elif pos == checkP[i]:
+            posL = i-1
+            posR = i+1
+    time = [9999,9999,9999,9999]
+    locationPL = checkP[0:posL+1]
+    locationPR = checkP[posR:]
+    if len(locationPL) == 0:
+        return (checkP[lenC-2]-pos)
+    elif len(locationPL) == 1:
+        time[0] = 2*checkP[lenC-2]-pos-checkP[0]
+        time[1] = checkP[-1]-pos
+    elif len(locationPL) >=2:
+        time[1] = 2*checkP[-1]-pos-checkP[1]
+    if len(locationPR) == 0:
+        return (pos-checkP[1])
+    elif len(locationPR) == 1:
+        time[2] = checkP[lenC-2]+pos-2*checkP[0]
+        time[3] = pos-checkP[0]
+    elif len(locationPL) >=2:
+        time[3] = checkP[1]+pos-2*checkP[1]
+    return min(time)
