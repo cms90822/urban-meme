@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar 30 20:18:47 2019
+
+@author: Administrator
+"""
+#import re 
+#re.split(': |',str) #用多个符号分割
+def calind(s,ind):
+    s1 = s[:ind]
+    s2 = s[ind+1:]
+    indl = -ind
+    indr = len(s2)+1
+    for i in range(len(s1)):
+        if s1[-1-i].isdigit() == False:
+            indl = -i
+            break
+    for i in range(len(s2)):
+        if s2[i].isdigit() == False:
+            indr = i+1
+            break
+    return indl, indr
+
+def cal(s):
+    while len(s) > 2:
+        if s.count('*') > 0:
+            index = s.index('*')
+            indl, indr = calind(s, index)
+#            s = s[:index-1] + [str(int(s[index-1])*int(s[index+1]))] + s[index+2:]
+            s = s[:index+indl] + [str(int(''.join(s[index+indl:index]))*int(''.join(s[index+1:index+indr])))] + s[index+indr:]
+        elif s.count('/') > 0:
+            index = s.index('/')
+            indl, indr = calind(s, index)
+#            s = s[:index-1] + [str(int(s[index-1])/int(s[index+1]))] + s[index+2:]
+            s = s[:index+indl] + [str(int(''.join(s[index+indl:index]))/int(''.join(s[index+1:index+indr])))] + s[index+indr:]
+        else:
+            if s[1] == '+':
+                index = s.index('+')
+                indl, indr = calind(s, index)
+#                s = [str(int(s[0]) + int(s[2]))] + s[3:]
+                s = s[:index+indl] + [str(int(''.join(s[index+indl:index]))+int(''.join(s[index+1:index+indr])))] + s[index+indr:]
+            else:
+                index = s.index('-')
+                indl, indr = calind(s, index)
+#                s = [str(int(s[0]) - int(s[2]))] + s[3:]
+                s = s[:index+indl] + [str(int(''.join(s[index+indl:index]))-int(''.join(s[index+1:index+indr])))] + s[index+indr:]
+    return s
+  
+nn = list(input().strip())
+minus = 0
+if nn[0] == '-':
+    minus += 1
+    nn = nn[1:]
+n = nn.copy()
+k = 0
+for i in range(len(nn)):
+    if nn[i] == '-':
+        if nn[i-1].isdigit() == False:
+            del n[i+k]
+            minus += 1
+            k += 1
+    
+while len(n) > 2:
+    
+    nleft = [i for i in range(len(n)) if n[i] == '(']
+    nright = [i for i in range(len(n)) if n[i] == ')']
+    if len(nleft) > 0:
+        inputs = n[nleft[-1]+1:nright[0]]
+        s = cal(inputs)
+        if int(s[0]) < 0:
+            s = s[0][1:]
+            minus += 1
+        else:
+            s = s[0][:]
+        n = n[:nleft[-1]]+[s]+n[nright[0]+1:]
+    else:
+        n = cal(n)
+print(float(n[0])*pow(-1,minus%2))
